@@ -1,0 +1,8 @@
+*__pycache__
+
+.env
+
+scratch.*
+
+config.yml
+cert.pem
