@@ -250,7 +250,7 @@ def cloudflared_login():
             printc(c.ORG, "  redericted to the \"Authorize Cloudflare Tunnel\" page. If you are not redirected,")
             printc(c.ORG, "  you will need to click the shortened url a second time after logging in. Then, just")
             printc(c.ORG, "  click the link and the script will create the configuration files, and put the")
-            printc(c.ORG, "  cert.pem file where it needs to go.")
+            printc(c.ORG, "  cert.pem file where it needs to go.\n")
             for line in process.stderr:
                 line = line.strip()
                 if not line:
