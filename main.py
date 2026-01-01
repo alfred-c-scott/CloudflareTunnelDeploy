@@ -243,13 +243,10 @@ def cloudflared_login():
                 stderr=subprocess.PIPE,
                 text=True
             )
-            print_border()
-            print_title("Login to Cloudflare")
-
             printc(c.YEL, "-  INSTRUCTIONS: During cloudflare login you may or may not be automatically")
             printc(c.YEL, "-  redericted to the \"Authorize Cloudflare Tunnel\" page. If you are not redirected,")
-            printc(c.YEL, "-  you will need to click the shortened url a second time after logging in. Then, just")
-            printc(c.YEL, "-  click the link and the script will create the configuration files, and put the")
+            printc(c.YEL, "-  you will need to click the shortened url a second time after logging in. Then,")
+            printc(c.YEL, "-  just click the link and the script will create the configuration files, and put the")
             printc(c.YEL, "-  cert.pem file where it needs to go.\n")
             for line in process.stderr:
                 line = line.strip()
@@ -323,7 +320,7 @@ def tunnel_config(tunnel_id: str, domain: str, port: str = 8443):
     with open(f"{Path.home()}/.cloudflared/config.yml", "w") as f:
         cred_file = f"/home/{getpass.getuser()}/.cloudflared/{tunnel_id}.json"
         domain = domain
-        service = f"http://localhost:{port}"
+        service = f"http://127.0.0.1:{port}"
         lines = [
             f"tunnel: {tunnel_id}",
             f"credentials-file: {cred_file}",
@@ -335,12 +332,18 @@ def tunnel_config(tunnel_id: str, domain: str, port: str = 8443):
         ]
         f.write("\n".join(lines))
 
-def route_dns(tunnel_name: str, domain: str, tunnel_id: str) -> str:
+def route_dns(tunnel_name: str, tunnel_id: str, domain: str | None) -> str:
     printc(c.YEL, f"{m.ARROW}  Creating CNAME record for {tunnel_name}")
     time.sleep(0.25)
     try:
+        # For root domains, don't pass domain as second argument to avoid CNAME flattening
+        if domain is None:
+            command = ["cloudflared", "tunnel", "route", "dns", tunnel_name]
+        else:
+            command = ["cloudflared", "tunnel", "route", "dns", tunnel_name, domain]
+
         process = subprocess.Popen(
-            ["cloudflared", "tunnel", "route", "dns", tunnel_name, domain],
+            command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -364,6 +367,9 @@ def route_dns(tunnel_name: str, domain: str, tunnel_id: str) -> str:
 
     except subprocess.CalledProcessError as exc:
         printc(c.RED, f"{m.X_BLD}  {exc.stderr}")
+
+def configure_env():
+    pass
 
 def cleanup() -> None:
     time.sleep(0.25)
@@ -392,9 +398,10 @@ def cloudflare_setup():
     tunnel_id = create_tunnel(tunnel_name=tunnel_name)
     tunnel_config(tunnel_id=tunnel_id, domain=domain, port=port)
     # cloudflared tunnel route dns portfoliosite yourdomain.com
-    route_dns(tunnel_name=tunnel_name, domain=domain, tunnel_id=tunnel_id)
+    route_dns(tunnel_name=tunnel_name, tunnel_id=tunnel_id)
     if sub_domain == "www":
-        route_dns(tunnel_name=f"www.{tunnel_name}", domain=f"www.{domain}", tunnel_id=tunnel_id)
+        route_dns(tunnel_name=f"www.{tunnel_name}", tunnel_id=tunnel_id, domain=f"www.{domain}")
+    configure_env()
     cleanup()
 
 if __name__ == "__main__":
