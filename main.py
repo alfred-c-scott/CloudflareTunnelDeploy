@@ -246,11 +246,11 @@ def cloudflared_login():
             print_border()
             print_title("Login to Cloudflare")
 
-            printc(c.ORG, "  INSTRUCTIONS: During cloudflare login you may or may not be automatically")
-            printc(c.ORG, "  redericted to the \"Authorize Cloudflare Tunnel\" page. If you are not redirected,")
-            printc(c.ORG, "  you will need to click the shortened url a second time after logging in. Then, just")
-            printc(c.ORG, "  click the link and the script will create the configuration files, and put the")
-            printc(c.ORG, "  cert.pem file where it needs to go.\n")
+            printc(c.YEL, "-  INSTRUCTIONS: During cloudflare login you may or may not be automatically")
+            printc(c.YEL, "-  redericted to the \"Authorize Cloudflare Tunnel\" page. If you are not redirected,")
+            printc(c.YEL, "-  you will need to click the shortened url a second time after logging in. Then, just")
+            printc(c.YEL, "-  click the link and the script will create the configuration files, and put the")
+            printc(c.YEL, "-  cert.pem file where it needs to go.\n")
             for line in process.stderr:
                 line = line.strip()
                 if not line:
@@ -394,8 +394,7 @@ def cloudflare_setup():
     # cloudflared tunnel route dns portfoliosite yourdomain.com
     route_dns(tunnel_name=tunnel_name, domain=domain, tunnel_id=tunnel_id)
     if sub_domain == "www":
-        domain = f"www.{domain}"
-        route_dns(tunnel_name=tunnel_name, domain=domain, tunnel_id=tunnel_id)
+        route_dns(tunnel_name=f"www.{tunnel_name}", domain=f"www.{domain}", tunnel_id=tunnel_id)
     cleanup()
 
 if __name__ == "__main__":
