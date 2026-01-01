@@ -243,6 +243,14 @@ def cloudflared_login():
                 stderr=subprocess.PIPE,
                 text=True
             )
+            print_border()
+            print_title("Login to Cloudflare")
+
+            printc(c.ORG, "  INSTRUCTIONS: During cloudflare login you may or may not be automatically")
+            printc(c.ORG, "  redericted to the \"Authorize Cloudflare Tunnel\" page. If you are not redirected,")
+            printc(c.ORG, "  you will need to click the shortened url a second time after logging in. Then, just")
+            printc(c.ORG, "  click the link and the script will create the configuration files, and put the")
+            printc(c.ORG, "  cert.pem file where it needs to go.")
             for line in process.stderr:
                 line = line.strip()
                 if not line:
