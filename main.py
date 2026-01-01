@@ -119,42 +119,42 @@ def pwd() -> str:
         printc(color=c.RED, out=f"Error: {exc.stderr}")
         sys.exit(1)
 
-def is_cloned(repo_name: str) -> bool:
-    time.sleep(0.25)
-    target_dir = str(Path.cwd().parent)
-    try:
-        result = subprocess.run(["ls", "-la", target_dir], check=True, capture_output=True, text=True)
-        lines = result.stdout.split("\n")
-        for line in lines:
-            if len(line) > 0 and line[0] == "d" and repo_name in line:
-                return True
-        return False
-    except subprocess.CalledProcessError as exc:
-        printc(color=c.RED, out=f"{exc.stderr}")
-        sys.exit(1)
+# def is_cloned(repo_name: str) -> bool:
+#     time.sleep(0.25)
+#     target_dir = str(Path.cwd().parent)
+#     try:
+#         result = subprocess.run(["ls", "-la", target_dir], check=True, capture_output=True, text=True)
+#         lines = result.stdout.split("\n")
+#         for line in lines:
+#             if len(line) > 0 and line[0] == "d" and repo_name in line:
+#                 return True
+#         return False
+#     except subprocess.CalledProcessError as exc:
+#         printc(color=c.RED, out=f"{exc.stderr}")
+#         sys.exit(1)
 
-def clone_repo(repo_name: str) -> None:
-    printc(color=c.YEL, out=f"{m.ARROW}  Cloning {repo_name} into parent directory")
-    time.sleep(0.25)
-    target_dir = str(Path.cwd().parent / repo_name)
-    if is_cloned(repo_name=repo_name):
-        printc(color=c.RED, out=f"{m.X_BLD}  Directory named {repo_name} already exists in parent directory", end='  ')
-        printc(color=c.GRN, out=f"{m.ARROW}  Attempting Cloudflare Setup")
-        print()
-        return
-    try:
-        subprocess.run(["git", "clone", GITHUB_URL+repo_name, target_dir], check=True, capture_output=True, text=True)
-        if is_cloned(repo_name=repo_name):
-            printc(color=c.GRN, out=f"{m.CHK_BLD}  Success Cloning {repo_name}")
-            print()
-            return
-        else:
-            printc(color=c.RED, out=f"Error Cloning {repo_name} into parent directory")
-            print()
-            return
-    except subprocess.CalledProcessError as exc:
-        print(f"Error: {exc.stderr}")
-        sys.exit(1)
+# def clone_repo(repo_name: str) -> None:
+#     printc(color=c.YEL, out=f"{m.ARROW}  Cloning {repo_name} into parent directory")
+#     time.sleep(0.25)
+#     target_dir = str(Path.cwd().parent / repo_name)
+#     if is_cloned(repo_name=repo_name):
+#         printc(color=c.RED, out=f"{m.X_BLD}  Directory named {repo_name} already exists in parent directory", end='  ')
+#         printc(color=c.GRN, out=f"{m.ARROW}  Attempting Cloudflare Setup")
+#         print()
+#         return
+#     try:
+#         subprocess.run(["git", "clone", GITHUB_URL+repo_name, target_dir], check=True, capture_output=True, text=True)
+#         if is_cloned(repo_name=repo_name):
+#             printc(color=c.GRN, out=f"{m.CHK_BLD}  Success Cloning {repo_name}")
+#             print()
+#             return
+#         else:
+#             printc(color=c.RED, out=f"Error Cloning {repo_name} into parent directory")
+#             print()
+#             return
+#     except subprocess.CalledProcessError as exc:
+#         print(f"Error: {exc.stderr}")
+#         sys.exit(1)
 
 def system_arch() -> str:
     time.sleep(0.25)
@@ -368,9 +368,6 @@ def route_dns(tunnel_name: str, tunnel_id: str, domain: str | None) -> str:
     except subprocess.CalledProcessError as exc:
         printc(c.RED, f"{m.X_BLD}  {exc.stderr}")
 
-def configure_env():
-    pass
-
 def cleanup() -> None:
     time.sleep(0.25)
     try:
@@ -382,11 +379,11 @@ def cleanup() -> None:
 def cloudflare_setup():
     print_border()
     print_title(title= "Cloudflare Tunnel Install and setup")
-    repo_name = get_repo_name()
+    # repo_name = get_repo_name()
     sudo_password = get_sudo_password()
     sub_domain = get_sub_domain()
     port = get_port_number()
-    clone_repo(repo_name=repo_name)
+    # clone_repo(repo_name=repo_name)
     download_cloudflared()
     install_cloudflared(password=sudo_password)
     cloudflared_login()
@@ -401,7 +398,6 @@ def cloudflare_setup():
     route_dns(tunnel_name=tunnel_name, tunnel_id=tunnel_id)
     if sub_domain == "www":
         route_dns(tunnel_name=f"www.{tunnel_name}", tunnel_id=tunnel_id, domain=f"www.{domain}")
-    configure_env()
     cleanup()
 
 if __name__ == "__main__":
