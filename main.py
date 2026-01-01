@@ -336,11 +336,7 @@ def route_dns(tunnel_name: str, tunnel_id: str, domain: str | None = None) -> st
     printc(c.YEL, f"{m.ARROW}  Creating CNAME record for {tunnel_name}")
     time.sleep(0.25)
     try:
-        # For root domains, don't pass domain as second argument to avoid CNAME flattening
-        if domain is None:
-            command = ["cloudflared", "tunnel", "route", "dns", tunnel_name]
-        else:
-            command = ["cloudflared", "tunnel", "route", "dns", tunnel_name, domain]
+        command = ["cloudflared", "tunnel", "route", "dns", tunnel_name, domain]
 
         process = subprocess.Popen(
             command,
@@ -395,7 +391,7 @@ def cloudflare_setup():
     tunnel_id = create_tunnel(tunnel_name=tunnel_name)
     tunnel_config(tunnel_id=tunnel_id, domain=domain, port=port)
     # cloudflared tunnel route dns portfoliosite yourdomain.com
-    route_dns(tunnel_name=tunnel_name, tunnel_id=tunnel_id)
+    route_dns(tunnel_name=tunnel_name, tunnel_id=tunnel_id, domain=domain)
     if sub_domain == "www":
         route_dns(tunnel_name=f"www.{tunnel_name}", tunnel_id=tunnel_id, domain=f"www.{domain}")
     cleanup()
