@@ -332,7 +332,7 @@ def tunnel_config(tunnel_id: str, domain: str, port: str = 8443):
         ]
         f.write("\n".join(lines))
 
-def route_dns(tunnel_name: str, tunnel_id: str, domain: str | None) -> str:
+def route_dns(tunnel_name: str, tunnel_id: str, domain: str | None = None) -> str:
     printc(c.YEL, f"{m.ARROW}  Creating CNAME record for {tunnel_name}")
     time.sleep(0.25)
     try:
